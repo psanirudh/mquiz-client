@@ -1,0 +1,195 @@
+<html>
+<head><title> 
+  This is website for quizing
+</title>
+
+<style type="text/css">
+input{
+     margin-right: 30px;
+     margin-left: 30px;
+
+}	
+
+button{
+	margin-top: 10px;
+	margin-left:10px;
+
+}
+
+.submit{
+	margin-left: 300px;
+}
+
+.timer{
+	font-size: 70px;
+	margin-left: 625px;
+	padding-top: 1200px;
+	color: blue;
+
+}
+
+</style>
+
+
+</head>
+
+<script type="text/javascript">
+
+var g;
+var hr,min,sec;
+var intervalId;
+
+var timeDisplay;
+
+
+var urlParams2 = new URLSearchParams(window.location.search);
+var k = urlParams2.get("timing");
+var tot_time = parseInt(k);
+
+function startTimer() {
+    timeDisplay=document.querySelector("#timer");
+	intervalId=setInterval(function () {
+
+		var h=new Date;
+		var timeElapsed = h-g;//
+		var tmp = tot_time - parseInt(timeElapsed/1000);
+		if(tmp>60)
+		{
+		var hr = parseInt(tmp/3600);
+
+		var tmp = parseInt(tmp%3600);
+        var min = parseInt(tmp/60);
+        var sec = parseInt(tmp%60);
+
+		timeDisplay.textContent= hr+" : "+min+" : "+sec;
+	   }
+	   else if(tmp>0){
+	   	var hr = parseInt(tmp/3600);
+
+		var tmp = parseInt(tmp%3600);
+        var min = parseInt(tmp/60);
+        var sec = parseInt(tmp%60);
+
+		timeDisplay.textContent= hr+" : "+min+" : "+sec;
+         timeDisplay.style.color = "red";
+	   }
+	   else{
+	   	submit();
+	   }
+		 
+		},1000)
+	   }
+
+
+	g=new Date;
+
+
+var questions,answers,no,responses;
+
+var urlParams = new URLSearchParams(window.location.search);
+var k = urlParams.get("qid");
+
+
+fetch('http:192.168.0.106:8000/quiz/'+k)
+.then(function(response) {
+	return response.json()   
+})
+.then(function(data){
+	questions = data.questions;
+    solutions = data.answers;
+    no =1;
+    responses = new Array(questions.length);
+    console.log(questions);
+    console.log(solutions);
+    console.log(questions.length);
+    document.getElementById('questions').innerHTML = questions[0]; 
+
+
+
+
+})
+	function submit(){
+
+		next();
+
+        document.getElementById('result').innerHTML = "Results are :: " 
+		document.getElementById('urRespons').innerHTML = "ur responses is : "+responses;
+		document.getElementById('Solution').innerHTML = "Solution is : "+solutions;
+
+        var score = 0 ;
+		for(var z=0;z<solutions.length;z++)
+		{
+			if(solutions[z]==responses[z])
+				score++;
+
+		}
+		document.getElementById('score').innerHTML = "Score is : "+score;
+
+	}
+
+
+
+	function next(){
+
+		var choice = document.getElementsByName('choice');
+        var answer;
+        var index;
+        for(i=0;i<4;i++){
+        	if(choice[i].checked){
+         		answer = i+1;
+         		responses[no-1] = answer;
+                index = i;
+                
+         	}
+         }
+		//window.alert("the response is "+answer);
+
+      if(no!=questions.length){ 
+    	choice[index].checked = false;
+	  document.getElementById('qno').innerHTML = "Question "+(++no)+" :" ;
+	  document.getElementById('questions').innerHTML = questions[no-1]; 
+       }
+	}
+
+
+</script>
+
+<body>
+
+           <h1>
+		<span id="timer" class="timer"></span></h1>
+
+
+<br><br>
+<h1 id="qno">Question 1 :</h1> 
+<pre>
+<h1 id="questions">
+ </h1>
+</pre>
+ <h1>
+<div name ="answers">
+	
+ <pre> 1)<input type="radio" name ="choice" id="1"></input>   2)<input type="radio" name ="choice" id="1"></input>   3)<input type="radio" name ="choice" id="1"></input>   4)<input type="radio" name ="choice" id="1"></input>
+    </pre>
+
+</div>
+</h1>
+<br>
+<button class="next" onclick="next()">Save & Next</button>
+
+<button class="submit" onclick="submit()">SUBMIT</button>
+<br>
+<p id ="result">
+</p>
+<p id="urRespons"></p>
+<p id="Solution"></p>
+<p id="score"></p>
+
+<script type="text/javascript">
+	
+	  	startTimer();
+
+</script>
+</body>
+
+</html>

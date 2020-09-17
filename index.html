@@ -1,0 +1,53 @@
+<html>
+<head><title>Home
+</title>
+</head>
+
+<body>
+<h1>
+WELCOME TO THE MQUIZ site.
+</h1>
+
+<br>
+<h1>
+You can click any of the below links to attend the quiz<br>
+</h1>
+
+<script type="text/javascript">
+
+fetch('http:192.168.0.106:8000/quiz/home')
+.then(function(response) {
+	return response.json()   
+})
+.then(function(data){
+
+      console.log(data)
+	ids  = data.qid;
+      titles = data.title;
+      timings = data.timing;
+	
+
+       var out="";
+       for(var i=0;i<ids.length;i++)
+       {
+       	out = out + "<a href= \" indexs.html?qid="+
+       	      ids[i]+"&timing="+timings[i]+
+       	     " \">"+
+       	     titles[i]+
+       	     "</a> <br>";
+
+       }
+       document.getElementById('dynamic').innerHTML = out;
+})
+.catch(function(error) {
+  console.log('Looks like there was a problem: \n', error);
+});
+
+
+</script>
+
+<h1 id="dynamic"></h1>
+
+</body>
+
+</html>
